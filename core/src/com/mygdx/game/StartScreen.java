@@ -30,16 +30,16 @@ public class StartScreen implements Screen {
         TextButton loginButton = new TextButton("Login", skin);
         TextButton registerButton = new TextButton("Register", skin);
 
-        Table table = new Table();
-        table.top().right(); // Alinea la tabla arriba a la derecha
-        table.add(loginButton).pad(10); // Agrega el botón de login con un espacio de 10 píxeles
-        table.add(registerButton).pad(10); // Agrega el botón de registro con un espacio de 10 píxeles
-        stage.addActor(table); // Agrega la tabla a la etapa (stage)
+        loginButton.setPosition(500,440);
+        registerButton.setPosition(560,440);
+
+        stage.addActor(loginButton);
+        stage.addActor(registerButton);
 
         loginButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Aquí puedes implementar la lógica para iniciar sesión
+                LoginActivity.Login(game);
             }
         });
 
@@ -51,7 +51,7 @@ public class StartScreen implements Screen {
         });
 
 
-        TextButton StartButton = new TextButton("Start", skin);
+        /*TextButton StartButton = new TextButton("Start", skin);
         StartButton.setPosition(10, 10);
         StartButton.addListener(new ClickListener() {
             @Override
@@ -60,7 +60,7 @@ public class StartScreen implements Screen {
             }
         });
 
-        stage.addActor(StartButton);
+        stage.addActor(StartButton);*/
     }
 
     @Override

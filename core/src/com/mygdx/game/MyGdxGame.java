@@ -1,22 +1,26 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MyGdxGame extends Game {
 	@Override
 	public void create () {
-		setScreen(new GameScreen(this));
+		setScreen(new StartScreen(this));
+	}
+
+	public void switchToScreen(int Screen){
+		switch (Screen){
+			case 0: setScreen(new StartScreen(this));
+			break;
+			case 1: setScreen(new LoginScreen(this));
+			break;
+			case 2: setScreen(new GameScreen(this));
+		}
 	}
 
 	@Override
 	public void render () {
 		super.render();
-		//setScreen(new StartScreen(this));
 	}
 	
 	@Override
