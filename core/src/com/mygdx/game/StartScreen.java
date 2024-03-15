@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class StartScreen implements Screen {
     private MyGdxGame game = new MyGdxGame();
+    private LoginScreen LoginScreen = new LoginScreen(game);
     private Texture background;
     private Stage stage;
 
@@ -39,7 +40,7 @@ public class StartScreen implements Screen {
         loginButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                LoginActivity.Login(game);
+                game.setScreen(LoginScreen);
             }
         });
 

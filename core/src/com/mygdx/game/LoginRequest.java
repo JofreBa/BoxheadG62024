@@ -1,12 +1,12 @@
 package com.mygdx.game;
 
 public class LoginRequest {
-    private String username;
-    private String password;
+    private String Username;
+    private String Password;
 
-    public LoginRequest(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public LoginRequest(String Username, String Password) {
+        this.Username = Username;
+        this.Password = Password;
     }
 }
 

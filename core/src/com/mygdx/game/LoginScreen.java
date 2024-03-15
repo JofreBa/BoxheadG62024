@@ -50,7 +50,9 @@ public class LoginScreen implements Screen {
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+                LoginActivity.Login(username, password);
             }
         });
 
