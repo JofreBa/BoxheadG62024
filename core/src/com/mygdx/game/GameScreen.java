@@ -18,27 +18,28 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
     private MyGdxGame game;
+    private Guts guts = new Guts();
+    private Thorne thorne = new Thorne();
     private ShapeRenderer shapeRenderer;
     private Character character;
     private Texture textureFront, textureBack, textureRight, textureLeft, textureStatic;
+    private TextureRegion[][] spritesFront, spritesBack, spritesRight, spritesLeft;
     private Animation<TextureRegion> animationFront, animationBack, animationRight, animationLeft;
     private Stage stage;
-
     private OrthographicCamera camera;
     private SpriteBatch batch;
     private int[][] map;
     private int mapWidth;
     private int mapHeight;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
-
     public GameScreen(MyGdxGame game) {
         this.game = game;
-        stage = new Stage();
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
@@ -71,18 +72,34 @@ public class GameScreen implements Screen {
         tiledMap.getLayers().add(layer);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-        // Cargar las texturas
-        textureFront = new Texture(Gdx.files.internal("assets/Character/Guts-Sprites-Front.png"));
-        textureBack = new Texture(Gdx.files.internal("assets/Character/Guts-Sprites-Back.png"));
-        textureRight = new Texture(Gdx.files.internal("assets/Character/Guts-Sprites-Dreta.png"));
-        textureLeft = new Texture(Gdx.files.internal("assets/Character/Guts-Sprites-Esquerra.png"));
-        textureStatic = new Texture(Gdx.files.internal("assets/Character/Guts-Sprites-Static.png"));
+        String SelectedCharacter = "Thorne";
 
-        // Dividir las texturas en 4 sprites de 16x16
-        TextureRegion[][] spritesFront = TextureRegion.split(textureFront, 64, 60);
-        TextureRegion[][] spritesBack = TextureRegion.split(textureBack, 64, 52);
-        TextureRegion[][] spritesRight = TextureRegion.split(textureRight, 64, 52);
-        TextureRegion[][] spritesLeft = TextureRegion.split(textureLeft, 64, 52);
+        switch(SelectedCharacter) {
+            case "Guts":
+                textureFront = guts.getTextureFront();
+                textureBack = guts.getTextureBack();
+                textureLeft = guts.getTextureLeft();
+                textureRight = guts.getTextureRight();
+                textureStatic = guts.getTextureStatic();
+                spritesFront = TextureRegion.split(textureFront, 64, 60);
+                spritesBack = TextureRegion.split(textureBack, 64, 52);
+                spritesRight = TextureRegion.split(textureRight, 64, 52);
+                spritesLeft = TextureRegion.split(textureLeft, 64, 60);
+                break;
+            case "Thorne":
+                textureStatic = thorne.getTextureStatic();
+                textureFront = thorne.getTextureFront();
+                textureBack = thorne.getTextureBack();
+                textureRight = thorne.getTextureRight();
+                textureLeft = thorne.getTextureLeft();
+                spritesFront = TextureRegion.split(textureFront, 64, 64);
+                spritesBack = TextureRegion.split(textureBack, 64, 60);
+                spritesRight = TextureRegion.split(textureRight, 64, 60);
+                spritesLeft = TextureRegion.split(textureLeft, 64, 60);
+                break;
+            default:
+                break;
+        }
 
         // Crear las animaciones con los sprites
         animationFront = new Animation<>(0.25f, spritesFront[0]);
@@ -93,13 +110,19 @@ public class GameScreen implements Screen {
         // Crear el sprite de reposo
         Sprite idleSprite = new Sprite(textureStatic);
         character = new Character(50, 50, 64, 52, animationFront, animationBack, animationRight, animationLeft, idleSprite);
-
-        stage = new Stage();
     }
 
     @Override
     public void show() {
+        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        Gdx.input.setInputProcessor(stage);
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.update();
+
         shapeRenderer = new ShapeRenderer();
+
+        // Agrega el stage a la vista de la cámara
+        stage.setViewport(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
     }
 
     @Override

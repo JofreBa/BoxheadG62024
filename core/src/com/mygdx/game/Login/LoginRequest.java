@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Login;
 
 public class LoginRequest {
     private String Username;

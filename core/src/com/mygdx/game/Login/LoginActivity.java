@@ -1,7 +1,7 @@
-package com.mygdx.game;
+package com.mygdx.game.Login;
 
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.Timer;
+import com.mygdx.game.MyGdxGame;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -12,8 +12,8 @@ public class LoginActivity {
     public LoginActivity(MyGdxGame game){
         this.game = game;
     }
-    public static void Login(String Username, String Password){
-        ApiService service = RetrofitClient.getClient("http://192.168.19.107:3000/api/login/");
+    public void Login(String Username, String Password){
+        ApiService service = RetrofitClient.getClient("http://192.168.19.46:3000/api/login/");
 
         LoginRequest loginRequest = new LoginRequest(Username, Password);
 
@@ -23,11 +23,11 @@ public class LoginActivity {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful()) {
-                    LoginResponse result = response.body();
+                    System.out.println("Cambia Pantalla");
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
-
+                            game.switchToScreen("Game");
                         }
                     }, 2);
                 } else {
