@@ -35,6 +35,7 @@ public class StartScreen implements Screen {
         TextButton loginButton = new TextButton("Login", skin);
         TextButton registerButton = new TextButton("Register", skin);
         TextButton startButton = new TextButton("Start", skin);
+        TextButton singlePlayerButton = new TextButton("Single Player", skin);
         TextButton shopButton = new TextButton("Shop", skin);
 
         textureStaticGuts = guts.getTextureStatic();
@@ -45,6 +46,7 @@ public class StartScreen implements Screen {
         loginButton.setPosition(500,440);
         registerButton.setPosition(560,440);
         startButton.setPosition(300, 85);
+        singlePlayerButton.setPosition(350, 85);
         shopButton.setPosition(10, 440);
 
         gutsImage.setPosition(220, 140);
@@ -61,6 +63,7 @@ public class StartScreen implements Screen {
         }
 
         stage.addActor(startButton);
+        stage.addActor(singlePlayerButton);
         stage.addActor(shopButton);
         stage.addActor(gutsImage);
         stage.addActor(thorneImage);
@@ -87,6 +90,14 @@ public class StartScreen implements Screen {
                 } else {
                     System.out.println("You need to login first!");
                 }
+            }
+        });
+        singlePlayerButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+                    game.switchToScreen("Game");
+
             }
         });
 

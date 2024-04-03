@@ -17,11 +17,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.Characters.Character;
 import com.mygdx.game.Characters.Guts;
 import com.mygdx.game.Characters.Thorne;
 import com.mygdx.game.MapsGenerator.MapGenerator;
+import com.mygdx.game.MapsGenerator.MapParser;
+import com.mygdx.game.MapsGenerator.TileData;
 
 public class GameScreen implements Screen {
     private MyGdxGame game;
@@ -35,7 +38,8 @@ public class GameScreen implements Screen {
     private Stage stage;
     private OrthographicCamera camera;
     private SpriteBatch batch;
-    private int[][] map;
+    private TileData[][] tileData;
+    public TiledMap tiledMap;
     private int mapWidth;
     private int mapHeight;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
@@ -47,30 +51,17 @@ public class GameScreen implements Screen {
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, w, h);
+        camera.zoom = 0.4f;
         camera.update();
 
         batch = new SpriteBatch();
 
-        // Generar el mapa
-        /*mapWidth = MapGenerator.MAP_WIDTH;
-        mapHeight = MapGenerator.MAP_HEIGHT;
-        map = MapGenerator.generateMap();*/
 
-        // Crear un TiledMap basado en la matriz generada
-        TiledMap tiledMap = new TiledMap();
-        TiledMapTileLayer layer = new TiledMapTileLayer(mapWidth, mapHeight, 16, 16);
-        for (int x = 0; x < mapWidth; x++) {
-            for (int y = 0; y < mapHeight; y++) {
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                if (map[x][y] == 1) {
-                    // Asignar una textura a las celdas de suelo
-                    Texture texture = new Texture(Gdx.files.internal("assets/ParsedTiles dungeon/stonefloor1_0_0.png"));
-                    cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
-                }
-                layer.setCell(x, y, cell);
-            }
-        }
-        tiledMap.getLayers().add(layer);
+        tileData = MapGenerator.generateMap();
+
+
+        tiledMap = MapParser.parseMap(tileData);
+
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
         String SelectedCharacter = "Thorne";
@@ -110,7 +101,7 @@ public class GameScreen implements Screen {
 
         // Crear el sprite de reposo
         Sprite idleSprite = new Sprite(textureStatic);
-        character = new Character(50, 50, 64, 52, animationFront, animationBack, animationRight, animationLeft, idleSprite);
+        character = new Character(TileData.playerSpawn[0]*16+5, TileData.playerSpawn[1]*16+5, 26, 26, animationFront, animationBack, animationRight, animationLeft, idleSprite);
     }
 
     @Override
@@ -143,7 +134,7 @@ public class GameScreen implements Screen {
         camera.update();
 
         // Se maneja la entrada del usuario
-        handleInput();
+        handleInput(delta);
 
         // Se dibuja el personaje usando el objeto batch del juego principal
         game.batch.begin();
@@ -151,10 +142,10 @@ public class GameScreen implements Screen {
         character.animationTime += Gdx.graphics.getDeltaTime();
         if (character.currentDisplay instanceof Animation) {
             TextureRegion currentFrame = ((Animation<TextureRegion>) character.currentDisplay).getKeyFrame(character.animationTime, true);
-            game.batch.draw(currentFrame, character.x, character.y);
+            game.batch.draw(currentFrame, character.x-character.width*0.5f, character.y-character.height*0.5f, character.width, character.height);
         } else if (character.currentDisplay instanceof Sprite) {
-            ((Sprite) character.currentDisplay).setPosition(character.x, character.y);
-            ((Sprite) character.currentDisplay).draw(game.batch);
+            game.batch.draw((Sprite) character.currentDisplay, character.x-character.width/2, character.y-character.height/2, character.width, character.height);
+
         }
 
         game.batch.end();
@@ -185,37 +176,41 @@ public class GameScreen implements Screen {
         stage.draw();
     }
 
-    private void handleInput() {
+    private void handleInput(float delta) {
         float dx = 0, dy = 0;
         float atackHitBoxX = 0, atackHitBoxY = 0, atackHitBoxWidth = 0, atackHitBoxHeigth = 0;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            dx -= 1;
+            if(!playerCollision(character.x-8,character.y)){
+            dx -= 20;
             atackHitBoxX = -20;
             atackHitBoxY = 0;
             atackHitBoxWidth = 40;
             atackHitBoxHeigth = 20;
-            character.currentDisplay = character.animationLeft;
+            character.currentDisplay = character.animationLeft;}
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            dx += 1;
+            if(!playerCollision(character.x+8, character.y)){
+            dx += 20;
             atackHitBoxX= 35;
             atackHitBoxY = 0;
             atackHitBoxWidth = 40;
             atackHitBoxHeigth = 20;
-            character.currentDisplay = character.animationRight;
+            character.currentDisplay = character.animationRight;}
         } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            dy += 1;
+            if(!playerCollision(character.x, character.y+8)){
+            dy += 20;
             atackHitBoxY = 40;
             atackHitBoxX= 25;
             atackHitBoxWidth = 20;
             atackHitBoxHeigth = 40;
-            character.currentDisplay = character.animationBack;
+            character.currentDisplay = character.animationBack;}
         } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            dy -= 1;
+            if(!playerCollision(character.x, character.y-16)){
+            dy -= 20;
             atackHitBoxY = -40;
             atackHitBoxX= 25;
             atackHitBoxWidth = 20;
             atackHitBoxHeigth = 40;
-            character.currentDisplay = character.animationFront;
+            character.currentDisplay = character.animationFront;}
         } else {
             character.currentDisplay = character.idleSprite;
         }
@@ -237,7 +232,21 @@ public class GameScreen implements Screen {
             atackhitbox.set(0, 0, 0, 0);
         }*/
 
-        character.move(dx, dy);
+        character.move(dx*delta, dy*delta);
+    }
+
+    boolean playerCollision(float x, float y) {
+        int tileX = (int) (x / 16);
+        int tileY = (int) (y / 16);
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+        TiledMapTileLayer.Cell cell = layer.getCell(tileX,tileY);
+        boolean collision = true;
+        try{
+            collision =  (boolean) cell.getTile().getProperties().get("collision");
+        }catch(NullPointerException e){
+            //cell no existe
+        }
+        return collision;
     }
 
     @Override

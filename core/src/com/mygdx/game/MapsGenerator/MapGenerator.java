@@ -1,5 +1,6 @@
 package com.mygdx.game.MapsGenerator;
 
+import com.badlogic.gdx.math.Interpolation;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class MapGenerator {
     private static final int MIN_DISTANCE_BETWEEN_ROOMS = 9;
     private static final int MAX_DISTANCE_BETWEEN_ROOMS = 24;
 
-    public TileData[][] generateMap() {
+    public static TileData[][] generateMap() {
         List<Room> rooms = new ArrayList<>();
         List<Corridor> corridors = new ArrayList<>();
         Random random = new Random();
@@ -114,7 +115,7 @@ public class MapGenerator {
         return getMapTiles(rooms, corridors);
     }
 
-    public boolean roomCollision(Room newRoom, List<Room> existingRooms) {
+    public static boolean roomCollision(Room newRoom, List<Room> existingRooms) {
         // Expand the new room's rectangle by 4 units in all directions
         Rectangle newRect = new Rectangle(newRoom.getX() - 4, newRoom.getY() - 4,
                 newRoom.getWidth() + 8, newRoom.getHeight() + 8);
@@ -140,7 +141,7 @@ public class MapGenerator {
         mapGenerator.generateMap();
     }
 
-    public void printMap(List<Room> rooms, List<Corridor> corridors) {
+    public static void printMap(List<Room> rooms, List<Corridor> corridors) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
@@ -154,7 +155,7 @@ public class MapGenerator {
             maxY = Math.max(maxY, room.getY() + room.getHeight());
         }
 
-        char[][] map = new char[maxY - minY + 1][maxX - minX + 1]; // Adjust dimensions according to bounds
+        char[][] map = new char[maxY - minY + 5][maxX - minX + 5]; // Adjust dimensions according to bounds
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 map[i][j] = '.';
@@ -164,7 +165,7 @@ public class MapGenerator {
         for (Room room : rooms) {
             for (int i = room.getX(); i < room.getX() + room.getWidth(); i++) {
                 for (int j = room.getY(); j < room.getY() + room.getHeight(); j++) {
-                    map[j - minY][i - minX] = '#';
+                    map[j - minY][i - minX] = 'F';
                 }
             }
         }
@@ -172,10 +173,57 @@ public class MapGenerator {
         for (Corridor corridor : corridors) {
             for (int i = corridor.getX(); i < corridor.getX() + corridor.getWidth(); i++) {
                 for (int j = corridor.getY(); j < corridor.getY() + corridor.getHeight(); j++) {
-                    map[j - minY][i - minX] = '#';
+                    map[j - minY][i - minX] = 'F';
                 }
             }
         }
+        
+
+    }
+
+    public static TileData[][] getMapTiles(List<Room> rooms, List<Corridor> corridors) {
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+
+        // Find bounds of the map
+        for (Room room : rooms) {
+            minX = Math.min(minX, room.getX()) -5;
+            minY = Math.min(minY, room.getY()) -5;
+            maxX = Math.max(maxX, room.getX() + room.getWidth()+5);
+            maxY = Math.max(maxY, room.getY() + room.getHeight()+5);
+        }
+
+        char[][] map = new char[maxX - minX + 5][maxY - minY + 5]; // Adjust dimensions according to bounds
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+                map[i][j] = '.';
+            }
+        }
+        TileData.playerSpawn[0] = (rooms.get(0).getX()+rooms.get(0).getWidth()/2)-minX;
+        TileData.playerSpawn[1] = (rooms.get(0).getY()+rooms.get(0).getHeight()/2)- minY;
+        for (Room room : rooms) {
+
+
+            for (int i = room.getX(); i < room.getX() + room.getWidth(); i++) {
+                for (int j = room.getY(); j < room.getY() + room.getHeight(); j++) {
+                    map[i - minX][j - minY] = 'F';
+
+                }
+            }
+        }
+
+        for (Corridor corridor : corridors) {
+            for (int i = corridor.getX(); i < corridor.getX() + corridor.getWidth(); i++) {
+                for (int j = corridor.getY(); j < corridor.getY() + corridor.getHeight(); j++) {
+                    map[i - minX][j - minY] = 'F';
+                }
+            }
+        }
+
+        TileData[][] tiles = new TileData[map.length+10][map[0].length+10];
+
 
         try (PrintWriter writer = new PrintWriter(new FileWriter("map.txt"))) {
             // Write map to file
@@ -188,82 +236,64 @@ public class MapGenerator {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+        for (int i = 1; i < map.length; i++) {
+            for (int j = 1; j < map[0].length; j++) {
 
-    public TileData[][] getMapTiles(List<Room> rooms, List<Corridor> corridors) {
-        int minX = Integer.MAX_VALUE;
-        int minY = Integer.MAX_VALUE;
-        int maxX = Integer.MIN_VALUE;
-        int maxY = Integer.MIN_VALUE;
+                if (map[i][j] == '.') {
+                    tiles[i][j] = new TileData("", true);
 
-        // Find bounds of the map
-        for (Room room : rooms) {
-            minX = Math.min(minX, room.getX()) -5;
-            minY = Math.min(minY, room.getY()) -5;
-            maxX = Math.max(maxX, room.getX() + room.getWidth());
-            maxY = Math.max(maxY, room.getY() + room.getHeight());
-        }
-
-        char[][] map = new char[maxY - minY + 1][maxX - minX + 1]; // Adjust dimensions according to bounds
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[i].length; j++) {
-                map[i][j] = '.';
-            }
-        }
-
-        for (Room room : rooms) {
-            for (int i = room.getX(); i < room.getX() + room.getWidth(); i++) {
-                for (int j = room.getY(); j < room.getY() + room.getHeight(); j++) {
-                    map[j - minY][i - minX] = '#';
-                }
-            }
-        }
-
-        for (Corridor corridor : corridors) {
-            for (int i = corridor.getX(); i < corridor.getX() + corridor.getWidth(); i++) {
-                for (int j = corridor.getY(); j < corridor.getY() + corridor.getHeight(); j++) {
-                    map[j - minY][i - minX] = '#';
-                }
-            }
-        }
-
-        TileData[][] tiles = new TileData[maxY - minY + 1][maxX - minX + 1];
-        try{
-            for (int i = 1; i < map.length; i++) {
-                for (int j = 1; i < map[0].length; j++) {
-                    if (map[i][j] == '.') {
-                        tiles[i][j] = new TileData("", true);
-                    } else if (map[i][j] == '#') {
-
-                        if (map[i - 1][j] == '.' && map[i][j + 1] == '.') { // top-left corner floor
-                            tiles[i][j] = new TileData("stonefloor1_0_0.png", false);
-                        } else if (map[i][j + 1] == '.' && map[i + 1][j] == '#' && map[i - 1][j] == '#') { // top floor
-                            tiles[i][j] = new TileData("stonefloor1_1_0.png", false);
-                        } else if (map[i + 1][j] == '.' && map[i][j + 1] == '.') { // top-right corner floor
-                            tiles[i][j] = new TileData("stonefloor1_2_0.png", false);
-                        } else if (map[i - 1][j] == '.' && map[i][j + 1] == '#' && map[i][j - 1] == '#') { // middle left
-                            // floor
-                            tiles[i][j] = new TileData("stonefloor1_0_1.png", false);
-                        } else if (map[i + 1][j] == '.' && map[i][j + 1] == '#' && map[i][j - 1] == '#') { // middle right
-                            // floor
-                            tiles[i][j] = new TileData("stonefloor1_2_1.png", false);
-                        } else if (map[i - 1][j] == '.' && map[i][j - 1] == '.') { // bottom-left corner floor
-                            tiles[i][j] = new TileData("stonefloor1_0_2.png", false);
-                        } else if (map[i][j - 1] == '.' && map[i + 1][j] == '#' && map[i - 1][j] == '#') { // bottom floor
-                            tiles[i][j] = new TileData("stonefloor1_1_2.png", false);
-                        } else if(map[i][j-1]=='.' && map[i+1][j]=='.'){ //bottom right corner floor
-                            tiles[i][j] = new TileData("stonefloor1_2_2.png", false);
-                        } else { //center floor
-                            tiles[i][j] = new TileData("stonefloor1_1_1.png", false);
-                        }
-
+                }else if (map[i][j] == 'F') {
+                    if (map[i - 1][j] == '.' && map[i][j + 1] == '.') { // top-left corner floor
+                        tiles[i][j] = new TileData("stonefloor1_0_0.png", false);
+                    } else if (map[i][j + 1] == '.' && map[i + 1][j] == 'F' && map[i - 1][j] == 'F') { // top floor
+                        tiles[i][j] = new TileData("stonefloor1_1_0.png", false);
+                    } else if (map[i + 1][j] == '.' && map[i][j + 1] == '.') { // top-right corner floor
+                        tiles[i][j] = new TileData("stonefloor1_2_0.png", false);
+                    } else if (map[i - 1][j] == '.' && map[i][j + 1] == 'F' && map[i][j - 1] == 'F') { // middle left
+                                                                                                       // floor
+                        tiles[i][j] = new TileData("stonefloor1_0_1.png", false);
+                    } else if (map[i + 1][j] == '.' && map[i][j + 1] == 'F' && map[i][j - 1] == 'F') { // middle right
+                                                                                                       // floor
+                        tiles[i][j] = new TileData("stonefloor1_2_1.png", false);
+                    } else if (map[i - 1][j] == '.' && map[i][j - 1] == '.') { // bottom-left corner floor
+                        tiles[i][j] = new TileData("stonefloor1_0_2.png", false);
+                    } else if (map[i][j - 1] == '.' && map[i + 1][j] == 'F' && map[i - 1][j] == 'F') { // bottom floor
+                        tiles[i][j] = new TileData("stonefloor1_1_2.png", false);
+                    } else if(map[i][j-1]=='.' && map[i+1][j]=='.'){ //bottom right corner floor
+                        tiles[i][j] = new TileData("stonefloor1_2_2.png", false);
+                    } else { //center floor
+                        tiles[i][j] = new TileData("stonefloor1_1_1.png", false);
                     }
 
                 }
-            }
-        }catch(ArrayIndexOutOfBoundsException e){
 
+            }
         }
-        return tiles;
+        setWalls(map,tiles);
+    return tiles; //
+    }
+    public static void setWalls(char[][] map, TileData[][] tiles){
+        int wallType = 0;
+        for (int j = 0; j < map[0].length; j++) {
+            for (int i = 0; i < map.length; i++) {
+                
+                if(map[i][j]=='F' && map[i][j+1]=='.'){
+                    map[i][j+1] = 'W';
+                    map[i][j+2] = 'W';
+                    map[i][j+3] = 'W';
+
+                    tiles[i][j+1] = new TileData("stonewall1_"+wallType+"_2.png", true);
+                    tiles[i][j+2] = new TileData("stonewall1_"+wallType+"_1.png", true);
+                    tiles[i][j+3] = new TileData("stonewall1_"+wallType+"_0.png", true);
+                    wallType++;
+
+                    if(wallType > 3){
+                        wallType = 0;
+                    }
+                }else{
+                    wallType = 0;
+                }
+            }
+        }
     }
 }

@@ -3,11 +3,11 @@ package com.mygdx.game.MapsGenerator;
 public class TileData {
     private final String tile;
     private final boolean collision;
-
+    public static int[] playerSpawn = new int[2];
     public TileData(String tile, boolean collision) {
         this.tile = tile;
         this.collision = collision;
-
+        
     }
 
     public String getTileName() {
