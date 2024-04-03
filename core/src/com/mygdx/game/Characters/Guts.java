@@ -1,18 +1,18 @@
-package com.mygdx.game;
+package com.mygdx.game.Characters;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public class Thorne extends Actor {
+public class Guts extends Actor {
     private Texture textureFront, textureBack, textureRight, textureLeft, textureStatic;
-    public Thorne(){
+    public Guts(){
         // Cargar las texturas
-        textureFront = new Texture(Gdx.files.internal("assets/Character/Thorne - Front.png"));
-        textureBack = new Texture(Gdx.files.internal("assets/Character/Thorne - Back.png"));
-        textureRight = new Texture(Gdx.files.internal("assets/Character/Thorne - Right.png"));
-        textureLeft = new Texture(Gdx.files.internal("assets/Character/Thorne - Left.png"));
-        textureStatic = new Texture(Gdx.files.internal("assets/Character/Thorne-Static.png"));
+        textureFront = new Texture(Gdx.files.internal("assets/Character/Guts-Sprites-Front.png"));
+        textureBack = new Texture(Gdx.files.internal("assets/Character/Guts-Sprites-Back.png"));
+        textureRight = new Texture(Gdx.files.internal("assets/Character/Guts-Sprites-Dreta.png"));
+        textureLeft = new Texture(Gdx.files.internal("assets/Character/Guts-Sprites-Esquerra.png"));
+        textureStatic = new Texture(Gdx.files.internal("assets/Character/Guts-Sprites-Static.png"));
     }
     public Texture getTextureFront() {
         return textureFront;

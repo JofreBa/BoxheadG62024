@@ -10,9 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.mygdx.game.Login.LoginActivity;
-import com.mygdx.game.MyGdxGame;
+import com.mygdx.game.Screens.MyGdxGame;
 
 public class LoginScreen implements Screen {
     private MyGdxGame game;
@@ -29,6 +29,15 @@ public class LoginScreen implements Screen {
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         Gdx.input.setInputProcessor(stage);
         skin = new Skin(Gdx.files.internal("uiskin.json"));
+
+        TextButton back = new TextButton("Back", skin);
+        back.setPosition(580 ,440);
+        back.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.switchToScreen("Start");
+            }
+        });
 
         TextFieldStyle textFieldStyle = skin.get(TextFieldStyle.class);
         usernameField = new TextField("", skin);
@@ -59,6 +68,7 @@ public class LoginScreen implements Screen {
         });
 
         stage.addActor(startButton);
+        stage.addActor(back);
     }
 
     @Override

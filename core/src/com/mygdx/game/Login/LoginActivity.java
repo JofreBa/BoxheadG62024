@@ -1,7 +1,7 @@
 package com.mygdx.game.Login;
 
 import com.badlogic.gdx.utils.Timer;
-import com.mygdx.game.MyGdxGame;
+import com.mygdx.game.Screens.MyGdxGame;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,16 +22,22 @@ public class LoginActivity {
         call.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                if (response.isSuccessful()) {
-                    System.out.println("Cambia Pantalla");
+                LoginResponse loginResponse = response.body();
+                if (loginResponse != null && loginResponse.getMessage().equals("Entra")) {
+                    System.out.println(loginResponse.getMessage());
+                    game.Loged = true;
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
-                            game.switchToScreen("Game");
+                            if(game.Loged){
+                                System.out.println(game.Loged);
+                                game.switchToScreen("Start");
+                            }
                         }
-                    }, 2);
+                    }, 1);
                 } else {
-                    System.out.println("Error en la respuesta: " + response.code());
+                    System.out.println("Error en la respuesta: Mensaje de error del servidor");
+                    System.out.println("Contrasenya o Usuaris mal colocats, torna-ho a probar");
                 }
             }
 

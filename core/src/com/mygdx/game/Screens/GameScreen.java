@@ -1,6 +1,5 @@
-package com.mygdx.game;
+package com.mygdx.game.Screens;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -19,8 +18,10 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
-import java.util.Iterator;
+import com.mygdx.game.Characters.Character;
+import com.mygdx.game.Characters.Guts;
+import com.mygdx.game.Characters.Thorne;
+import com.mygdx.game.MapsGenerator.MapGenerator;
 
 public class GameScreen implements Screen {
     private MyGdxGame game;
@@ -51,9 +52,9 @@ public class GameScreen implements Screen {
         batch = new SpriteBatch();
 
         // Generar el mapa
-        mapWidth = MapGenerator.MAP_WIDTH;
+        /*mapWidth = MapGenerator.MAP_WIDTH;
         mapHeight = MapGenerator.MAP_HEIGHT;
-        map = MapGenerator.generateMap();
+        map = MapGenerator.generateMap();*/
 
         // Crear un TiledMap basado en la matriz generada
         TiledMap tiledMap = new TiledMap();
@@ -63,7 +64,7 @@ public class GameScreen implements Screen {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                 if (map[x][y] == 1) {
                     // Asignar una textura a las celdas de suelo
-                    Texture texture = new Texture(Gdx.files.internal("assets/tiles/stonefloor1_0_0.png"));
+                    Texture texture = new Texture(Gdx.files.internal("assets/ParsedTiles dungeon/stonefloor1_0_0.png"));
                     cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
                 }
                 layer.setCell(x, y, cell);

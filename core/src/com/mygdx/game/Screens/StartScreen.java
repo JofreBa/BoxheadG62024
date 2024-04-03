@@ -1,7 +1,6 @@
-package com.mygdx.game;
+package com.mygdx.game.Screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,6 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.mygdx.game.Characters.Guts;
+import com.mygdx.game.Characters.Thorne;
 import com.mygdx.game.Login.LoginScreen;
 
 public class StartScreen implements Screen {
@@ -34,6 +35,7 @@ public class StartScreen implements Screen {
         TextButton loginButton = new TextButton("Login", skin);
         TextButton registerButton = new TextButton("Register", skin);
         TextButton startButton = new TextButton("Start", skin);
+        TextButton shopButton = new TextButton("Shop", skin);
 
         textureStaticGuts = guts.getTextureStatic();
         textureStaticThorne = thorne.getTextureStatic();
@@ -43,17 +45,23 @@ public class StartScreen implements Screen {
         loginButton.setPosition(500,440);
         registerButton.setPosition(560,440);
         startButton.setPosition(300, 85);
+        shopButton.setPosition(10, 440);
 
-        gutsImage.setPosition(220, 150);
+        gutsImage.setPosition(220, 140);
         thorneImage.setPosition(65, 200);
 
         float scale_factor = 3.0f;
         gutsImage.setScale(scale_factor, scale_factor);
         thorneImage.setScale(scale_factor - 0.5f,scale_factor - 0.5f);
 
-        stage.addActor(loginButton);
-        stage.addActor(registerButton);
+        if(!game.Loged){
+            System.out.println(game.Loged);
+            stage.addActor(loginButton);
+            stage.addActor(registerButton);
+        }
+
         stage.addActor(startButton);
+        stage.addActor(shopButton);
         stage.addActor(gutsImage);
         stage.addActor(thorneImage);
 
@@ -74,7 +82,18 @@ public class StartScreen implements Screen {
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.switchToScreen("Game");
+                if(game.Loged) {
+                    game.switchToScreen("Game");
+                } else {
+                    System.out.println("You need to login first!");
+                }
+            }
+        });
+
+        shopButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.switchToScreen("Shop");
             }
         });
     }
@@ -83,22 +102,8 @@ public class StartScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        boolean selected;
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            gutsImage.setPosition(350, 165);
-            thorneImage.setPosition(240, 150);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            gutsImage.setPosition(100, 165);
-
-        } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-            gutsImage.setPosition(220, 140);
-            thorneImage.setPosition(65, 200);
-        }
-
         stage.act(delta);
         stage.draw();
-
-
     }
 
     @Override

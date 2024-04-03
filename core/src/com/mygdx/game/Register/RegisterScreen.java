@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.Login.LoginActivity;
-import com.mygdx.game.MyGdxGame;
+import com.mygdx.game.Screens.MyGdxGame;
 
 
 public class RegisterScreen implements Screen {
