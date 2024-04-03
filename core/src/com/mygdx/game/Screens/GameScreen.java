@@ -26,6 +26,9 @@ import com.mygdx.game.Characters.Guts;
 import com.mygdx.game.Characters.Thorne;
 import com.mygdx.game.Enemys.Goblins;
 import com.mygdx.game.MapsGenerator.MapGenerator;
+import com.mygdx.game.MapsGenerator.TileData;
+import com.mygdx.game.MapsGenerator.MapParser;
+import com.mygdx.game.MapsGenerator.TileData;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,6 +53,8 @@ public class GameScreen implements Screen {
     private SpriteBatch batch;
     public static String SelectedCharacter;
     private int[][] map;
+    private TileData[][] tileData;
+    public TiledMap tiledMap;
     private int mapWidth;
     private int mapHeight;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
@@ -61,6 +66,7 @@ public class GameScreen implements Screen {
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, w, h);
+        camera.zoom = 0.4f;
         camera.update();
 
         batch = new SpriteBatch();
@@ -87,9 +93,7 @@ public class GameScreen implements Screen {
         tiledMap.getLayers().add(layer);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-        if(SelectedCharacter == null) {
-            SelectedCharacter = "Guts";
-        }
+        String SelectedCharacter = "Thorne";
 
         switch(SelectedCharacter) {
             case "Guts":
@@ -126,7 +130,7 @@ public class GameScreen implements Screen {
 
         // Crear el sprite de reposo
         Sprite idleSprite = new Sprite(textureStatic);
-        character = new Character(50, 50, 64, 52, animationFront, animationBack, animationRight, animationLeft, idleSprite);
+        character = new Character(TileData.playerSpawn[0]*16+5, TileData.playerSpawn[1]*16+5, 26, 26, animationFront, animationBack, animationRight, animationLeft, idleSprite);
 
         goblins = new ArrayList<>();
         aliveGoblins = new ArrayList<>();
@@ -165,7 +169,7 @@ public class GameScreen implements Screen {
         camera.update();
 
         // Se maneja la entrada del usuario
-        handleInput();
+        handleInput(delta);
 
         // Se dibuja el personaje usando el objeto batch del juego principal
         game.batch.begin();
@@ -216,8 +220,6 @@ public class GameScreen implements Screen {
         float vida = character.getHealth() / 100.0f;
         shapeRenderer.setColor(Color.GREEN);
         shapeRenderer.rect(10, Gdx.graphics.getHeight() - 20, vida * 100, 10);
-
-        shapeRenderer.rect(atackhitbox.x, atackhitbox.y, atackhitbox.width, atackhitbox.height);
 
         // Terminar de dibujar formas.
         shapeRenderer.end();

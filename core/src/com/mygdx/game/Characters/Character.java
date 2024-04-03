@@ -11,11 +11,16 @@ public class Character {
     // Tamaño de la hitbox
     public float width, height;
     // Velocidad de movimiento
-    public float speed = 3.0f;
+    public float speed = 8.0f;
     public Animation<TextureRegion> animationFront, animationBack, animationRight, animationLeft;
     public Sprite idleSprite;
     public Object currentDisplay;
     public float animationTime = 0;
+
+    public Direction direction = Direction.down;
+    enum Direction{
+        left,right,top,down
+    }
 
     private int health = 100;
     public int attackDamage = 10;
