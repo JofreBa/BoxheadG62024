@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Characters.Character;
 
 import java.util.List;
 
@@ -42,11 +43,11 @@ public class Goblins {
 
         this.bounds = new Rectangle(position.x, position.y, 64, 64);
 
-        GoblinAtackFront = new Texture(Gdx.files.internal("GoblinAtacFront.png"));
-        GoblinAtackBack = new Texture(Gdx.files.internal("GoblinAtacBack.png"));
-        GoblinAtackRight = new Texture(Gdx.files.internal("GoblinAtacRight.png"));
-        GoblinAtackLeft = new Texture(Gdx.files.internal("GoblinAtacLeft.png"));
-        GoblinStatic = new Texture(Gdx.files.internal("GoblinStatic.png"));
+        GoblinAtackFront = new Texture(Gdx.files.internal("assets/Enemies/GoblinAtacFront.png"));
+        GoblinAtackBack = new Texture(Gdx.files.internal("assets/Enemies/GoblinAtacBack.png"));
+        GoblinAtackRight = new Texture(Gdx.files.internal("assets/Enemies/GoblinAtacRight.png"));
+        GoblinAtackLeft = new Texture(Gdx.files.internal("assets/Enemies/GoblinAtacLeft.png"));
+        GoblinStatic = new Texture(Gdx.files.internal("assets/Enemies/GoblinStatic.png"));
 
         TextureRegion[][] spritesFront = TextureRegion.split(GoblinAtackFront, 64, 52);
         TextureRegion[][] spritesBack = TextureRegion.split(GoblinAtackBack, 64, 52);
@@ -64,9 +65,9 @@ public class Goblins {
         return bounds;
     }
 
-    /*public void attack() {
+    public void attack() {
         character.takeDamage(2.5f);
-    }*/
+    }
 
     public void update(float delta) {
         // Calcula la dirección hacia el personaje

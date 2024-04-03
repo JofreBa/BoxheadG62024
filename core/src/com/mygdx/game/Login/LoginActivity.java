@@ -13,7 +13,7 @@ public class LoginActivity {
         this.game = game;
     }
     public void Login(String Username, String Password){
-        ApiService service = RetrofitClient.getClient("http://192.168.19.46:3000/api/login/");
+        ApiService service = RetrofitClient.getClient("http://10.2.2.83:3000/api/login/");
 
         LoginRequest loginRequest = new LoginRequest(Username, Password);
 

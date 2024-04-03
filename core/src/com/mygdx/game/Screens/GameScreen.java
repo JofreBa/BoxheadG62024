@@ -16,25 +16,39 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.Characters.Character;
 import com.mygdx.game.Characters.Guts;
 import com.mygdx.game.Characters.Thorne;
+import com.mygdx.game.Enemys.Goblins;
 import com.mygdx.game.MapsGenerator.MapGenerator;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 
 public class GameScreen implements Screen {
     private MyGdxGame game;
     private Guts guts = new Guts();
     private Thorne thorne = new Thorne();
+    private Rectangle atackhitbox;
     private ShapeRenderer shapeRenderer;
     private Character character;
     private Texture textureFront, textureBack, textureRight, textureLeft, textureStatic;
     private TextureRegion[][] spritesFront, spritesBack, spritesRight, spritesLeft;
     private Animation<TextureRegion> animationFront, animationBack, animationRight, animationLeft;
+    private List<Goblins> goblins;
+    private List<Goblins> aliveGoblins;
+    private float spawnTimer;
     private Stage stage;
     private OrthographicCamera camera;
     private SpriteBatch batch;
+    public static String SelectedCharacter;
     private int[][] map;
     private int mapWidth;
     private int mapHeight;
@@ -73,7 +87,9 @@ public class GameScreen implements Screen {
         tiledMap.getLayers().add(layer);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-        String SelectedCharacter = "Thorne";
+        if(SelectedCharacter == null) {
+            SelectedCharacter = "Guts";
+        }
 
         switch(SelectedCharacter) {
             case "Guts":
@@ -111,6 +127,12 @@ public class GameScreen implements Screen {
         // Crear el sprite de reposo
         Sprite idleSprite = new Sprite(textureStatic);
         character = new Character(50, 50, 64, 52, animationFront, animationBack, animationRight, animationLeft, idleSprite);
+
+        goblins = new ArrayList<>();
+        aliveGoblins = new ArrayList<>();
+        spawnTimer = 0;
+
+        atackhitbox = new Rectangle();
     }
 
     @Override
@@ -157,6 +179,30 @@ public class GameScreen implements Screen {
             ((Sprite) character.currentDisplay).draw(game.batch);
         }
 
+        spawnTimer += delta;
+
+        if (spawnTimer > 5) {
+            spawnGoblin();
+            spawnTimer = 0;
+        }
+
+        for (Goblins goblin : goblins) {
+            Iterator<Goblins> iterator = goblins.iterator();
+            while (iterator.hasNext()) {
+                goblin = iterator.next();
+                if (atackhitbox.overlaps(goblin.getBounds())) {
+                    goblin.takeDamage(character.attackDamage); // reduce la salud del enemigo
+                    if (goblin.getHealth() <= 0) {
+                        iterator.remove(); // elimina el enemigo de la lista
+                    }
+                }
+                goblin.update(delta);
+                goblin.draw(game.batch, delta);
+            }
+        }
+
+        goblins = aliveGoblins;
+
         game.batch.end();
 
         // Comenzar a dibujar formas.
@@ -171,6 +217,8 @@ public class GameScreen implements Screen {
         shapeRenderer.setColor(Color.GREEN);
         shapeRenderer.rect(10, Gdx.graphics.getHeight() - 20, vida * 100, 10);
 
+        shapeRenderer.rect(atackhitbox.x, atackhitbox.y, atackhitbox.width, atackhitbox.height);
+
         // Terminar de dibujar formas.
         shapeRenderer.end();
 
@@ -183,6 +231,13 @@ public class GameScreen implements Screen {
 
         // Se dibuja el escenario del juego usando el objeto batch del juego principal
         stage.draw();
+    }
+
+    private void spawnGoblin() {
+        // Crea un nuevo enemigo y lo añade a la lista
+        Goblins goblin = new Goblins(100, 2, new Vector2(MathUtils.random(0, Gdx.graphics.getWidth()), MathUtils.random(0, Gdx.graphics.getHeight())), character, goblins);
+        //spawnGoblinSound.play();
+        goblins.add(goblin);
     }
 
     private void handleInput() {

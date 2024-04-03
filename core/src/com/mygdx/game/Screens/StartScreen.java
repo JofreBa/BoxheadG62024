@@ -1,6 +1,7 @@
 package com.mygdx.game.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -101,6 +102,20 @@ public class StartScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+            gutsImage.setPosition(220, 140);
+            gutsImage.setPosition(gutsImage.getX() + 150, gutsImage.getY() + 20);
+            thorneImage.setPosition(65, 200);
+            thorneImage.setPosition(thorneImage.getX() + 180, thorneImage.getY() - 20);
+            GameScreen.SelectedCharacter = "Thorne";
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+            gutsImage.setPosition(220, 140);
+            gutsImage.setPosition(gutsImage.getX() - 150, gutsImage.getY() + 20);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+            gutsImage.setPosition(220, 140);
+            thorneImage.setPosition(65, 200);
+        }
 
         stage.act(delta);
         stage.draw();
