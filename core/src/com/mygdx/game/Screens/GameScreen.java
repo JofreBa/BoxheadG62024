@@ -93,7 +93,9 @@ public class GameScreen implements Screen {
         tiledMap.getLayers().add(layer);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-        String SelectedCharacter = "Thorne";
+        if(SelectedCharacter == null) {
+            SelectedCharacter = "Guts";
+        }
 
         switch(SelectedCharacter) {
             case "Guts":
@@ -169,7 +171,7 @@ public class GameScreen implements Screen {
         camera.update();
 
         // Se maneja la entrada del usuario
-        handleInput(delta);
+        handleInput();
 
         // Se dibuja el personaje usando el objeto batch del juego principal
         game.batch.begin();

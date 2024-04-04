@@ -70,7 +70,7 @@ public class Goblins {
     }
 
     public void update(float delta) {
-      /*  // Calcula la dirección hacia el personaje
+        // Calcula la dirección hacia el personaje
         Vector2 direction = new Vector2(character.x - position.x, character.y - position.y);
         direction.nor();
         Vector2 velocity = direction.scl(speed);
@@ -90,14 +90,12 @@ public class Goblins {
         if (position.dst(character.x, character.y) <= attackRange) {
             // Comprueba si ha pasado suficiente tiempo desde el último ataque
             if (lastAttackTime >= attackInterval) {
-                //attack();
+                attack();
                 lastAttackTime = 0; // reinicia el contador del tiempo del último ataque
             } else {
                 lastAttackTime += delta; // incrementa el contador del tiempo del último ataque
             }
         }
-
-*/
     }
 
 
