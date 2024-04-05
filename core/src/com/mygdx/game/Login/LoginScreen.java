@@ -31,7 +31,7 @@ public class LoginScreen implements Screen {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         TextButton back = new TextButton("Back", skin);
-        back.setPosition(580 ,440);
+        back.setPosition(1800 ,1000);
         back.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -42,20 +42,20 @@ public class LoginScreen implements Screen {
         TextFieldStyle textFieldStyle = skin.get(TextFieldStyle.class);
         usernameField = new TextField("", skin);
         usernameField.setMessageText("Username");
-        usernameField.setPosition(100, 300);
+        usernameField.setPosition(850, 600);
         usernameField.setSize(200, 40);
         stage.addActor(usernameField);
 
         passwordField = new TextField("", skin);
         passwordField.setMessageText("Password");
-        passwordField.setPosition(100, 250);
+        passwordField.setPosition(850, 500);
         passwordField.setSize(200, 40);
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
         stage.addActor(passwordField);
 
         TextButton startButton = new TextButton("Start", skin);
-        startButton.setPosition(100,200);
+        startButton.setPosition(900,400);
 
         startButton.addListener(new ChangeListener() {
             @Override

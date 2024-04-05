@@ -1,5 +1,6 @@
 package com.mygdx.game.Screens;
 
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -156,85 +157,94 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        if (character.getHealth() <= 0) {
-            // Cambia a la pantalla de fin de juego
-            //game.setScreen(new EndScreen(this));
-        }
+        if (game.Paused){
+            game.switchToScreen("Pause");
+        } else {
+            if (character.getHealth() <= 0) {
+                // Cambia a la pantalla de fin de juego
+                //game.setScreen(new EndScreen(this));
+            }
 
-        // Se limpia la pantalla con un color negro
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            // Se limpia la pantalla con un color negro
+            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.position.set(character.x, character.y, 0);
-        tiledMapRenderer.setView(camera);
-        tiledMapRenderer.render();
-        camera.update();
+            camera.position.set(character.x, character.y, 0);
+            tiledMapRenderer.setView(camera);
+            tiledMapRenderer.render();
+            camera.update();
 
-        // Se maneja la entrada del usuario
-        handleInput();
+            // Se maneja la entrada del usuario
+            handleInput();
 
-        // Se dibuja el personaje usando el objeto batch del juego principal
-        game.batch.begin();
-        game.batch.setProjectionMatrix(camera.combined);
-        character.animationTime += Gdx.graphics.getDeltaTime();
-        if (character.currentDisplay instanceof Animation) {
-            TextureRegion currentFrame = ((Animation<TextureRegion>) character.currentDisplay).getKeyFrame(character.animationTime, true);
-            game.batch.draw(currentFrame, character.x, character.y);
-        } else if (character.currentDisplay instanceof Sprite) {
-            ((Sprite) character.currentDisplay).setPosition(character.x, character.y);
-            ((Sprite) character.currentDisplay).draw(game.batch);
-        }
+            // Se dibuja el personaje usando el objeto batch del juego principal
+            game.batch.begin();
+            game.batch.setProjectionMatrix(camera.combined);
+            character.animationTime += Gdx.graphics.getDeltaTime();
+            if (character.currentDisplay instanceof Animation) {
+                TextureRegion currentFrame = ((Animation<TextureRegion>) character.currentDisplay).getKeyFrame(character.animationTime, true);
+                game.batch.draw(currentFrame, character.x, character.y);
+            } else if (character.currentDisplay instanceof Sprite) {
+                ((Sprite) character.currentDisplay).setPosition(character.x, character.y);
+                ((Sprite) character.currentDisplay).draw(game.batch);
+            }
 
-        spawnTimer += delta;
+            spawnTimer += delta;
 
-        if (spawnTimer > 5) {
-            spawnGoblin();
-            spawnTimer = 0;
-        }
+            if (spawnTimer > 5) {
+                spawnGoblin();
+                spawnTimer = 0;
+            }
 
-        for (Goblins goblin : goblins) {
             Iterator<Goblins> iterator = goblins.iterator();
             while (iterator.hasNext()) {
-                goblin = iterator.next();
+                Goblins goblin = iterator.next();
+
+                // Reducir la salud si hay un ataque
                 if (atackhitbox.overlaps(goblin.getBounds())) {
-                    goblin.takeDamage(character.attackDamage); // reduce la salud del enemigo
-                    if (goblin.getHealth() <= 0) {
-                        iterator.remove(); // elimina el enemigo de la lista
-                    }
+                    goblin.takeDamage(character.attackDamage);
                 }
+
+                // Actualizar y dibujar al goblin
                 goblin.update(delta);
                 goblin.draw(game.batch, delta);
+
+                // Eliminar al goblin si su salud es menor o igual a 0
+                if (goblin.getHealth() <= 0) {
+                    iterator.remove();
+                }
             }
+
+
+            goblins = aliveGoblins;
+
+            game.batch.end();
+
+            // Comenzar a dibujar formas.
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+            // Dibujar el fondo de la barra de vida.
+            shapeRenderer.setColor(Color.RED);
+            shapeRenderer.rect(10, Gdx.graphics.getHeight() - 20, 100, 10);
+
+            // Dibujar la vida actual. Supongamos que la vida es un valor entre 0 y 1.
+            float vida = character.getHealth() / 100.0f;
+            shapeRenderer.setColor(Color.GREEN);
+            shapeRenderer.rect(10, Gdx.graphics.getHeight() - 20, vida * 100, 10);
+
+            // Terminar de dibujar formas.
+            shapeRenderer.end();
+
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(Color.WHITE);
+            shapeRenderer.end();
+
+            // Se actualiza el escenario del juego
+            stage.act(delta);
+
+            // Se dibuja el escenario del juego usando el objeto batch del juego principal
+            stage.draw();
         }
-
-        goblins = aliveGoblins;
-
-        game.batch.end();
-
-        // Comenzar a dibujar formas.
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        // Dibujar el fondo de la barra de vida.
-        shapeRenderer.setColor(Color.RED);
-        shapeRenderer.rect(10, Gdx.graphics.getHeight() - 20, 100, 10);
-
-        // Dibujar la vida actual. Supongamos que la vida es un valor entre 0 y 1.
-        float vida = character.getHealth() / 100.0f;
-        shapeRenderer.setColor(Color.GREEN);
-        shapeRenderer.rect(10, Gdx.graphics.getHeight() - 20, vida * 100, 10);
-
-        // Terminar de dibujar formas.
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.end();
-
-        // Se actualiza el escenario del juego
-        stage.act(delta);
-
-        // Se dibuja el escenario del juego usando el objeto batch del juego principal
-        stage.draw();
     }
 
     private void spawnGoblin() {
@@ -246,34 +256,17 @@ public class GameScreen implements Screen {
 
     private void handleInput() {
         float dx = 0, dy = 0;
-        float atackHitBoxX = 0, atackHitBoxY = 0, atackHitBoxWidth = 0, atackHitBoxHeigth = 0;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             dx -= 1;
-            atackHitBoxX = -20;
-            atackHitBoxY = 0;
-            atackHitBoxWidth = 40;
-            atackHitBoxHeigth = 20;
             character.currentDisplay = character.animationLeft;
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             dx += 1;
-            atackHitBoxX= 35;
-            atackHitBoxY = 0;
-            atackHitBoxWidth = 40;
-            atackHitBoxHeigth = 20;
             character.currentDisplay = character.animationRight;
         } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             dy += 1;
-            atackHitBoxY = 40;
-            atackHitBoxX= 25;
-            atackHitBoxWidth = 20;
-            atackHitBoxHeigth = 40;
             character.currentDisplay = character.animationBack;
         } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             dy -= 1;
-            atackHitBoxY = -40;
-            atackHitBoxX= 25;
-            atackHitBoxWidth = 20;
-            atackHitBoxHeigth = 40;
             character.currentDisplay = character.animationFront;
         } else {
             character.currentDisplay = character.idleSprite;
@@ -290,12 +283,13 @@ public class GameScreen implements Screen {
             character.setSpeed(3.0f);
         }
 
-        /*if (Gdx.input.isKeyPressed(Input.Keys.C)) {
-            atackhitbox.set(character.x + atackHitBoxX, character.y + atackHitBoxY, atackHitBoxWidth, atackHitBoxHeigth);
-        } else {
-            atackhitbox.set(0, 0, 0, 0);
-        }*/
+        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
+            character.attack(goblins);
+        }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+            game.Paused = true;
+        }
         character.move(dx, dy);
     }
 

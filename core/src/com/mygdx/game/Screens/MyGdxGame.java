@@ -7,6 +7,7 @@ import com.mygdx.game.Register.RegisterScreen;
 
 public class MyGdxGame extends Game {
 	public SpriteBatch batch;
+	public boolean Paused;
 	public boolean Loged;
 	@Override
 	public void create () {
@@ -32,6 +33,11 @@ public class MyGdxGame extends Game {
 			case "Shop":
 				setScreen(new ShopScreen(this));
 				break;
+			case "Pause":
+				setScreen(new PausedScreen(this));
+				break;
+			case "Dead":
+				setScreen(new DeadScreen(this));
 			default:
 				break;
 		}

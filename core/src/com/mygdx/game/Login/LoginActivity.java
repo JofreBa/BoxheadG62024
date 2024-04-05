@@ -9,11 +9,13 @@ import retrofit2.Response;
 
 public class LoginActivity {
     private MyGdxGame game;
+    //private String URL = "http://10.2.2.83:3000/api/login/";
+    private String URL = "http://192.168.19.21:3000/api/login/";
     public LoginActivity(MyGdxGame game){
         this.game = game;
     }
     public void Login(String Username, String Password){
-        ApiService service = RetrofitClient.getClient("http://10.2.2.83:3000/api/login/");
+        ApiService service = RetrofitClient.getClient(URL);
 
         LoginRequest loginRequest = new LoginRequest(Username, Password);
 

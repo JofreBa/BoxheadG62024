@@ -2,8 +2,13 @@ package com.mygdx.game.Characters;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.Enemys.Goblins;
+
+import java.util.List;
 
 public class Character {
     // Posición del personaje
@@ -18,8 +23,9 @@ public class Character {
     public float animationTime = 0;
 
     public Direction direction = Direction.down;
-    enum Direction{
-        left,right,top,down
+
+    enum Direction {
+        left, right, up, down
     }
 
     private int health = 100;
@@ -60,10 +66,50 @@ public class Character {
     public int getHealth() {
         return health;
     }
+
     public void setHealth(int health) {
         this.health = health;
     }
+
     public void takeDamage(float damage) {
         health -= damage;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void attack(List<Goblins> goblins) {
+        // Calcula la posición de la hitbox del ataque basándote en la posición y dirección del personaje
+        float attackX = x;
+        float attackY = y;
+        switch (direction) {
+            case left:
+                attackX -= 30; // ajusta la posición de la hitbox hacia la izquierda
+                break;
+            case right:
+                attackX += 30; // ajusta la posición de la hitbox hacia la derecha
+                break;
+            case up:
+                attackY += 30; // ajusta la posición de la hitbox hacia arriba
+                break;
+            case down:
+                attackY -= 30; // ajusta la posición de la hitbox hacia abajo
+                break;
+        }
+        // Itera sobre los goblins y aplica daño a aquellos dentro del rango del ataque
+        for (Goblins goblin : goblins) {
+            if (Math.abs(goblin.getX() - attackX) <= 30 && Math.abs(goblin.getY() - attackY) <= 30) {
+                goblin.takeDamage(attackDamage);
+            }
+        }
     }
 }

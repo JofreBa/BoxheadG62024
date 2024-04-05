@@ -22,7 +22,7 @@ public class StartScreen implements Screen {
     private com.mygdx.game.Login.LoginScreen LoginScreen = new LoginScreen(game);
     private Texture textureStaticGuts, textureStaticThorne;
     private Image gutsImage, thorneImage;
-    private Stage stage;
+    private final Stage stage;
 
 
     public StartScreen(MyGdxGame game) {
@@ -38,20 +38,22 @@ public class StartScreen implements Screen {
         TextButton startButton = new TextButton("Start", skin);
         TextButton singlePlayerButton = new TextButton("Single Player", skin);
         TextButton shopButton = new TextButton("Shop", skin);
+        TextButton exitButton = new TextButton("Exit", skin);
 
         textureStaticGuts = guts.getTextureStatic();
         textureStaticThorne = thorne.getTextureStatic();
         gutsImage = new Image(textureStaticGuts);
         thorneImage = new Image(textureStaticThorne);
 
-        loginButton.setPosition(500,440);
-        registerButton.setPosition(560,440);
-        startButton.setPosition(300, 85);
-        singlePlayerButton.setPosition(350, 85);
-        shopButton.setPosition(10, 440);
+        exitButton.setPosition(10, 1040);
+        loginButton.setPosition(1850,1040);
+        registerButton.setPosition(1750,1040);
+        startButton.setPosition(1000, 250);
+        singlePlayerButton.setPosition(970, 185);
+        shopButton.setPosition(60, 1040);
 
-        gutsImage.setPosition(220, 140);
-        thorneImage.setPosition(65, 200);
+        gutsImage.setPosition(920, 440);
+        thorneImage.setPosition(750, 500);
 
         float scale_factor = 3.0f;
         gutsImage.setScale(scale_factor, scale_factor);
@@ -68,6 +70,7 @@ public class StartScreen implements Screen {
         stage.addActor(shopButton);
         stage.addActor(gutsImage);
         stage.addActor(thorneImage);
+        stage.addActor(exitButton);
 
         loginButton.addListener(new ChangeListener() {
             @Override
@@ -108,6 +111,13 @@ public class StartScreen implements Screen {
                 game.switchToScreen("Shop");
             }
         });
+
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.exit();
+            }
+        });
     }
     @Override
     public void render(float delta) {
@@ -115,17 +125,17 @@ public class StartScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            gutsImage.setPosition(220, 140);
+            gutsImage.setPosition(920, 440);
             gutsImage.setPosition(gutsImage.getX() + 150, gutsImage.getY() + 20);
-            thorneImage.setPosition(65, 200);
+            thorneImage.setPosition(750, 500);
             thorneImage.setPosition(thorneImage.getX() + 180, thorneImage.getY() - 20);
             GameScreen.SelectedCharacter = "Thorne";
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            gutsImage.setPosition(220, 140);
+            gutsImage.setPosition(920, 440);
             gutsImage.setPosition(gutsImage.getX() - 150, gutsImage.getY() + 20);
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-            gutsImage.setPosition(220, 140);
-            thorneImage.setPosition(65, 200);
+            gutsImage.setPosition(920, 440);
+            thorneImage.setPosition(750, 500);
         }
 
         stage.act(delta);

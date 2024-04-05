@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Characters.Character;
+import com.mygdx.game.Screens.GameScreen;
 
 import java.util.List;
 
@@ -16,9 +17,6 @@ public class Goblins {
     private Character character; // referencia al personaje
     private List<Goblins> goblins;
     private Rectangle bounds;
-
-
-
     private int health = 30;
     public float speed = 2.5f;
     private Vector2 position;
@@ -124,4 +122,11 @@ public class Goblins {
     public void setHealth(int health) {
         this.health = health;
     }
+    public float getX() {
+        return position.x;
+    }
+    public float getY() {
+        return position.y;
+    }
+
 }
