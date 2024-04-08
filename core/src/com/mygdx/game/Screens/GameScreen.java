@@ -4,6 +4,7 @@ package com.mygdx.game.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -26,18 +27,15 @@ import com.mygdx.game.Characters.Character;
 import com.mygdx.game.Characters.Guts;
 import com.mygdx.game.Characters.Thorne;
 import com.mygdx.game.Enemys.Goblins;
-import com.mygdx.game.MapsGenerator.MapGenerator;
-import com.mygdx.game.MapsGenerator.TileData;
-import com.mygdx.game.MapsGenerator.MapParser;
 import com.mygdx.game.MapsGenerator.TileData;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 public class GameScreen implements Screen {
     private MyGdxGame game;
+    private Music music;
     private Guts guts = new Guts();
     private Thorne thorne = new Thorne();
     private Rectangle atackhitbox;
@@ -61,6 +59,10 @@ public class GameScreen implements Screen {
     private OrthogonalTiledMapRenderer tiledMapRenderer;
     public GameScreen(MyGdxGame game) {
         this.game = game;
+
+        music = Gdx.audio.newMusic(Gdx.files.internal("assets/Music/MusicGame.wav"));
+        music.setLooping(true);
+        music.play();
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
@@ -310,7 +312,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void hide() {
-
+        music.stop();
+        music.dispose();
     }
 
     @Override

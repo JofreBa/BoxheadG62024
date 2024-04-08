@@ -5,22 +5,28 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mygdx.game.Stats.Stats;
 
 public class ShopScreen implements Screen {
     private MyGdxGame game;
+    public Stats stats;
     private Texture textureThorneSword;
     private Image thorneSwordImage;
     private Stage stage;
+    private int price= 18;
 
     public ShopScreen(MyGdxGame game){
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        int Usercoins = stats.getCoins();
 
         TextButton back = new TextButton("Back", skin);
         back.setPosition(580 ,440);
@@ -33,18 +39,33 @@ public class ShopScreen implements Screen {
 
         textureThorneSword = new Texture(Gdx.files.internal("assets/Character/Thorne_sword.png"));
         thorneSwordImage = new Image(textureThorneSword);
-        thorneSwordImage.setPosition(40, 300);
+        thorneSwordImage.setPosition(100, 500);
 
 
-        TextButton buyButton = new TextButton("Buy", skin);
+        TextButton buyButtonthorneSword = new TextButton("Buy", skin);
 
-        buyButton.setPosition(85, 250);
+        buyButtonthorneSword.setPosition(85, 250);
+
+        buyButtonthorneSword.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(Usercoins >= price){
+                    stats.setCoins(Usercoins - price);
+                    stats.setThorne_Sword(true);
+                    System.out.println("Comprado");
+                } else {
+                    System.out.println("Not enough money");
+                }
+            }
+        });
+
+
 
         float scale_factor = 2f;
         thorneSwordImage.setScale(scale_factor ,scale_factor);
 
         stage.addActor(thorneSwordImage);
-        stage.addActor(buyButton);
+        stage.addActor(buyButtonthorneSword);
         stage.addActor(back);
     }
     @Override

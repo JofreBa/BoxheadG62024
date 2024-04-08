@@ -10,7 +10,7 @@ import retrofit2.Response;
 public class LoginActivity {
     private MyGdxGame game;
     //private String URL = "http://10.2.2.83:3000/api/login/";
-    private String URL = "http://192.168.19.21:3000/api/login/";
+    private String URL = "http://192.168.18.213:3000/api/login/";
     public LoginActivity(MyGdxGame game){
         this.game = game;
     }
@@ -48,6 +48,8 @@ public class LoginActivity {
                 System.out.println("Error en la conexion: " + t.getMessage());
             }
         });
+
+
     }
 }
 
