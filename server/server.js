@@ -9,12 +9,12 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-const corsOptions = {
-  origin: 'http://127.0.0.1:3000', // URL de tu aplicación Vue.js
+/*const corsOptions = {
+  origin: 'http://127.0.0.1:3100', // URL de tu aplicación Vue.js
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
+};*/
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
@@ -90,11 +90,46 @@ async function updateUser(collection, userId, updatedUserData) {
   if (!collection) {
     throw new Error('La colección no está definida');
   }
+
   const result = await collection.updateOne(
     { _id: userId },
     { $set: updatedUserData }
   );
+
   console.log('Usuario actualizado:', result);
+  return result;
+}
+
+app.post('/users', async (req, res) => {
+  const { name, email } = req.body;
+  const newUser = {
+    _id: generateUniqueId(), // Genera un _id único
+    name,
+    email,
+  };
+
+  try {
+    const collection = await connectToMongoDB();
+    const result = await createUser(collection, newUser);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Error al crear usuario:', error);
+    res.status(500).json({ success: false, message: 'Error al crear usuario' });
+  }
+});
+
+function generateUniqueId() {
+  // Genera un _id aleatorio único
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+}
+
+async function createUser(collection, newUser) {
+  if (!collection) {
+    throw new Error('La colección no está definida');
+  }
+
+  const result = await collection.insertOne(newUser);
+  console.log('Nuevo usuario creado:', result);
   return result;
 }
 
