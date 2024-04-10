@@ -29,4 +29,4 @@ async function closeMongoDB() {
     }
 }
 
-module.exports = { connectToMongoDB, closeMongoDB };
+module.exports = { connectToMongoDB, closeMongoDB};

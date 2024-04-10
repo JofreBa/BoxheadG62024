@@ -61,6 +61,20 @@
       </v-col>
     </v-row>
   </div>
+  <div>
+    <v-dialog v-model="dialogConfirm" max-width="500">
+      <v-card>
+        <v-card-title>Confirmar Eliminación</v-card-title>
+        <v-card-text>
+          ¿Estás seguro que deseas eliminar a {{usuarioEliminarName}}?
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="error" @click="eliminarConfirmado">Eliminar</v-btn>
+          <v-btn @click="cancelarEliminacion">Cancelar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
@@ -74,6 +88,9 @@ export default {
       nombreNuevoUsuario: "",
       emailNuevoUsuario: "",
       mostrarCrearFormulario: false,
+      dialogConfirm: false, 
+      usuarioEliminar: null,
+      usuarioEliminarName:''
     };
   },
   mounted() {
@@ -114,13 +131,11 @@ export default {
         }
       } catch (error) {
         console.error("Error al imprimir usuarios:", error);
-        // Manejo de errores si la solicitud falla
       }
     },
 
 
     mostrarEdicion(usuario) {
-      // Marca el usuario como editando
       usuario.editando = true;
     },
     async guardarEdicion(usuario) {
@@ -150,25 +165,21 @@ export default {
         }
       } catch (error) {
         console.error("Error al actualizar usuario:", error);
-        // Manejo de errores si la solicitud falla
       }
     },
     cancelarEdicion(usuario) {
-      // Cancela la edición, restaura los valores originales
       usuario.nombreEditado = usuario.name;
       usuario.emailEditado = usuario.email;
       usuario.editando = false;
     },
     async eliminarUsuario(usuario) {
+
       console.log("Eliminar usuario:", usuario);
-      // Implementa la lógica para eliminar un usuario
     },
     mostrarFormularioCrear() {
-      // Mostrar el formulario para crear un nuevo usuario
       this.mostrarCrearFormulario = true;
     },
     cancelarCrearUsuario() {
-      // Cancelar la creación de un nuevo usuario
       this.mostrarCrearFormulario = false;
       this.nombreNuevoUsuario = "";
       this.emailNuevoUsuario = "";
@@ -198,26 +209,56 @@ export default {
             email: this.emailNuevoUsuario,
           });
 
-          // Limpiar campos y ocultar el formulario
           this.cancelarCrearUsuario();
         }
       } catch (error) {
         console.error("Error al crear nuevo usuario:", error);
-        // Manejo de errores si la solicitud falla
       }
     },
 
+     async eliminarUsuario(usuario) {
+      // Mostrar diálogo de confirmación y guardar el usuario a eliminar
+      this.dialogConfirm = true;
+      this.usuarioEliminar = usuario;
+      this.usuarioEliminarName = usuario.name;
+      
+    },
+
+    async eliminarConfirmado() {
+      try {
+        const response = await axios.delete(
+          `http://localhost:3100/users/${this.usuarioEliminar._id}`
+        );
+        console.log(
+          "Respuesta del servidor al eliminar usuario:",
+          response.data
+        );
+        // Eliminar localmente si la solicitud fue exitosa
+        this.usuarios = this.usuarios.filter(
+          (usuario) => usuario._id !== this.usuarioEliminar._id
+        );
+        // Cerrar el diálogo y limpiar el usuario a eliminar
+        this.dialogConfirm = false;
+        this.usuarioEliminar = null;
+      } catch (error) {
+        console.error("Error al eliminar usuario:", error);
+      }
+    },
+
+    cancelarEliminacion() {
+      // Cancelar la eliminación, cerrar el diálogo y limpiar el usuario a eliminar
+      this.dialogConfirm = false;
+      this.usuarioEliminar = null;
+      this.usuarioEliminarName = '';
+    },
   },
 };
 </script>
 
 <style scoped>
-/* Estilos para la lista */
 .v-list-item {
   padding-top: 8px;
-  /* Ajusta el espacio entre los elementos */
   padding-bottom: 8px;
-  /* Ajusta el espacio entre los elementos */
 }
 
 .v-col {

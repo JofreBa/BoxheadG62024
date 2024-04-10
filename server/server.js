@@ -3,16 +3,13 @@ const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+
 const { connectToMongoDB, closeMongoDB } = require('./mongoDBConection');
+const { printCollection, updateUser, generateUniqueId, createUser, deleteUser } = require('./mongoDBFunctions');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
-
-/*const corsOptions = {
-  origin: 'http://127.0.0.1:3100', // URL de tu aplicación Vue.js
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};*/
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -30,6 +27,7 @@ app.get('/connect-mongodb', async (req, res) => {
         res.status(500).send('Error al conectar a MongoDB');
     }
 });
+
 app.get('/disconnect-mongodb', async (req, res) => {
     try {
         await closeMongoDB();
@@ -62,15 +60,6 @@ app.route('/print-collection')
     }
   });
 
-async function printCollection(collection) {
-  if (!collection) {
-    throw new Error('La colección no está definida');
-  }
-  const users = await collection.find().toArray();
-  console.log('Colección de usuarios:', users);
-  return users;
-}
-
 // Ruta para actualizar un usuario
 app.put('/users/:id', async (req, res) => {
   const userId = req.params.id;
@@ -86,20 +75,7 @@ app.put('/users/:id', async (req, res) => {
   }
 });
 
-async function updateUser(collection, userId, updatedUserData) {
-  if (!collection) {
-    throw new Error('La colección no está definida');
-  }
-
-  const result = await collection.updateOne(
-    { _id: userId },
-    { $set: updatedUserData }
-  );
-
-  console.log('Usuario actualizado:', result);
-  return result;
-}
-
+// Ruta para crear un nuevo usuario
 app.post('/users', async (req, res) => {
   const { name, email } = req.body;
   const newUser = {
@@ -118,20 +94,22 @@ app.post('/users', async (req, res) => {
   }
 });
 
-function generateUniqueId() {
-  // Genera un _id aleatorio único
-  return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-}
+// Ruta para eliminar un usuario
+app.delete('/users/:id', async (req, res) => {
+  const userId = req.params.id;
 
-async function createUser(collection, newUser) {
-  if (!collection) {
-    throw new Error('La colección no está definida');
+  try {
+    const collection = await connectToMongoDB();
+    const result = await deleteUser(collection, userId);
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    }
+    res.json({ success: true, message: 'Usuario eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar usuario:', error);
+    res.status(500).json({ success: false, message: 'Error al eliminar usuario' });
   }
-
-  const result = await collection.insertOne(newUser);
-  console.log('Nuevo usuario creado:', result);
-  return result;
-}
+});
 
 // Inicia el servidor
 const PORT = process.env.PORT || 3100;
