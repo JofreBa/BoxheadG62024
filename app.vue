@@ -1,19 +1,24 @@
 <template>
-  <div id="app">
-    <GameStats />
+  <div>
+    
+    <NuxtLayout />
+    
   </div>
 </template>
 
 <script>
 // Import the GameStats component
-import GameStats from './gameStats.vue';
+import GameStats from './components/gameStats.vue';
+import Navigation from './components/navigation.vue';
+import Users from './components/users.vue';
 
 export default {
   name: 'App',
   components: {
     // Register the GameStats component
     GameStats
-  }
+  },
+  
 };
 </script>
 
