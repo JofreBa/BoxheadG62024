@@ -1,3 +1,15 @@
+const API_URL = 'http://your-backend-api-url'; // Update with your actual API URL
+
+export async function fetchUsers() {
+  try {
+    const response = await axios.get(`${API_URL}/users`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+}
+
 async function printCollection(collection) {
     if (!collection) {
         throw new Error('La colección no está definida');
@@ -45,6 +57,7 @@ async function deleteUser(collection, userId) {
     console.log('Usuario eliminado:', result);
     return result;
 }
+
 async function updateGameStats(collection, gameStatsData) {
     if (!collection) {
         throw new Error('La colección no está definida');
@@ -102,4 +115,5 @@ async function getImage(collection) {
         return null;
     }
 }
-module.exports = { getImage, uploadImage, printCollection, updateUser, generateUniqueId, createUser, deleteUser, updateGameStats };
+
+module.exports = { getImage, uploadImage, printCollection, updateUser, generateUniqueId, createUser, deleteUser, updateGameStats, fetchUsers };

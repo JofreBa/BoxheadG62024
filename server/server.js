@@ -5,8 +5,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const { connectToMongoDB, closeMongoDB } = require('./mongoDBConection');
-const { uploadImage, getImage, printCollection, updateUser, generateUniqueId, createUser, deleteUser, updateGameStats } = require('./mongoDBFunctions');
-
+const { fetchUsers, uploadImage, getImage, printCollection, updateUser, generateUniqueId, createUser, deleteUser, updateGameStats } = require('./mongoDBFunctions');
 
 const app = express();
 const server = http.createServer(app);
@@ -19,25 +18,15 @@ app.get('/', (req, res) => {
     res.send('Servidor en funcionamiento');
 });
 
-/* app.get('/connect-mongodb', async (req, res) => {
-    try {
-        const collection = await connectToMongoDB();
-        res.send('Conexión exitosa a MongoDB');
-    } catch (error) {
-        console.error('Error al conectar a MongoDB:', error);
-        res.status(500).send('Error al conectar a MongoDB');
-    }
+app.get('/users', async (req, res) => {
+  try {
+    const users = await fetchUsers();
+    res.json({ success: true, data: users });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ success: false, message: 'Error fetching users' });
+  }
 });
-
-app.get('/disconnect-mongodb', async (req, res) => {
-    try {
-        await closeMongoDB();
-        res.send('Desconexión exitosa de MongoDB');
-    } catch (error) {
-        console.error('Error al cerrar la conexión a MongoDB:', error);
-        res.status(500).send('Error al cerrar la conexión a MongoDB');
-    }
-}); */
 
 app.route('/print-users')
   .get(async (req, res) => {
