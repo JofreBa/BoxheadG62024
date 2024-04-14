@@ -14,7 +14,7 @@ export default {
     return {
       items: [
         { text: 'Game Values', link: '/changeGameStats' },
-        { text: 'Estadistiques', link: '/about' },
+        { text: 'Estadistiques', link: '/estadistica' },
         { text: 'Users', link: '/users' },
         
       ]

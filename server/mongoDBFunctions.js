@@ -1,6 +1,6 @@
 const API_URL = 'http://your-backend-api-url'; // Update with your actual API URL
 
-export async function fetchUsers() {
+ async function fetchUsers() {
   try {
     const response = await axios.get(`${API_URL}/users`);
     return response.data;
@@ -116,4 +116,4 @@ async function getImage(collection) {
     }
 }
 
-module.exports = { getImage, uploadImage, printCollection, updateUser, generateUniqueId, createUser, deleteUser, updateGameStats, fetchUsers };
+module.exports = { fetchUsers, getImage, uploadImage, printCollection, updateUser, generateUniqueId, createUser, deleteUser, updateGameStats, fetchUsers };

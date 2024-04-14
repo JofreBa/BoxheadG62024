@@ -3,6 +3,9 @@ const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
+const { exec } = require('child_process');
+const fs = require('fs');
 
 const { connectToMongoDB, closeMongoDB } = require('./mongoDBConection');
 const { fetchUsers, uploadImage, getImage, printCollection, updateUser, generateUniqueId, createUser, deleteUser, updateGameStats } = require('./mongoDBFunctions');
@@ -151,6 +154,42 @@ app.post('/uploadImage', async (req, res) => {
   } catch (error) {
       res.status(500).json({ success: false, message: 'Error loading image' });
   }
+});
+
+app.get('/getEstadisticas', (req, res) => {
+  // Define paths to Python scripts
+  const gamesScriptPath = path.join(__dirname, 'estadistica', 'games.py');
+  const dailyGamesScriptPath = path.join(__dirname, 'estadistica', 'daily_games.py');
+
+  // Define the working directory
+  const cwd = path.join(__dirname, 'estadistica');
+
+  // Execute games.py script
+  exec(`python games.py`, { cwd }, (error1, stdout1, stderr1) => {
+      if (error1) {
+          console.error(`Error executing games.py: ${error1}`);
+          return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      // Execute daily_games.py script
+      exec(`python daily_games.py`, { cwd }, (error2, stdout2, stderr2) => {
+          if (error2) {
+              console.error(`Error executing daily_games.py: ${error2}`);
+              return res.status(500).json({ error: 'Internal Server Error' });
+          }
+
+          // Read images and encode to Base64
+          const averageGameTableImage = fs.readFileSync(path.join(cwd, 'overall_average_game_table.png'), { encoding: 'base64' });
+          const gamesPlayedBarChartImage = fs.readFileSync(path.join(cwd, 'games_played_bar_chart.png'), { encoding: 'base64' });
+
+          // Return the images encoded as Base64 in the response
+          res.json({
+              
+              image1: `data:image/png;base64,${averageGameTableImage}`,
+              image2: `data:image/png;base64,${gamesPlayedBarChartImage}`
+          });
+      });
+  });
 });
 
 // Inicia el servidor

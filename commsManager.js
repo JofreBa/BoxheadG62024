@@ -74,4 +74,13 @@ export async function saveImage(imageData) {
         console.error('Error saving image:', error);
     }
 }
+export async function getEstadistiques() {
+  
+      
+      const response = await fetch('http://localhost:3100/getEstadisticas');
+      
+      const data = await response.json();
+      return data;
+      
+}
   

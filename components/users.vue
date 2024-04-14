@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { fetchUsers } from '../server/mongoDBFunctions'; 
+//import { fetchUsers } from '../server/mongoDBFunctions'; 
 
 export default {
   data() {
@@ -90,7 +90,7 @@ export default {
   },
   async created() {
     try {
-      this.users = await fetchUsers(); // Fetch users when the component is created
+      //this.users = await fetchUsers(); // Fetch users when the component is created
       this.loading = false;
     } catch (error) {
       console.error('Error fetching users in UsersPanel:', error);
