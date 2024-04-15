@@ -27,6 +27,8 @@ import com.mygdx.game.Characters.Character;
 import com.mygdx.game.Characters.Guts;
 import com.mygdx.game.Characters.Thorne;
 import com.mygdx.game.Enemys.Goblins;
+import com.mygdx.game.MapsGenerator.MapGenerator;
+import com.mygdx.game.MapsGenerator.MapParser;
 import com.mygdx.game.MapsGenerator.TileData;
 
 import java.util.ArrayList;
@@ -74,26 +76,10 @@ public class GameScreen implements Screen {
 
         batch = new SpriteBatch();
 
-        // Generar el mapa
-        /*mapWidth = MapGenerator.MAP_WIDTH;
-        mapHeight = MapGenerator.MAP_HEIGHT;
-        map = MapGenerator.generateMap();*/
+        tileData = MapGenerator.generateMap();
 
-        // Crear un TiledMap basado en la matriz generada
-        TiledMap tiledMap = new TiledMap();
-        TiledMapTileLayer layer = new TiledMapTileLayer(mapWidth, mapHeight, 16, 16);
-        for (int x = 0; x < mapWidth; x++) {
-            for (int y = 0; y < mapHeight; y++) {
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                if (map[x][y] == 1) {
-                    // Asignar una textura a las celdas de suelo
-                    Texture texture = new Texture(Gdx.files.internal("assets/ParsedTiles dungeon/stonefloor1_0_0.png"));
-                    cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
-                }
-                layer.setCell(x, y, cell);
-            }
-        }
-        tiledMap.getLayers().add(layer);
+        tiledMap = MapParser.parseMap(tileData);
+
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
         if(SelectedCharacter == null) {
@@ -135,8 +121,7 @@ public class GameScreen implements Screen {
 
         // Crear el sprite de reposo
         Sprite idleSprite = new Sprite(textureStatic);
-        character = new Character(TileData.playerSpawn[0]*16+5, TileData.playerSpawn[1]*16+5, 26, 26, animationFront, animationBack, animationRight, animationLeft, idleSprite);
-
+        character = new Character(TileData.playerSpawn[0]*16+5, TileData.playerSpawn[1]*16+5, 64, 52, animationFront, animationBack, animationRight, animationLeft, idleSprite);
         goblins = new ArrayList<>();
         aliveGoblins = new ArrayList<>();
         spawnTimer = 0;
@@ -163,8 +148,7 @@ public class GameScreen implements Screen {
             game.switchToScreen("Pause");
         } else {
             if (character.getHealth() <= 0) {
-                // Cambia a la pantalla de fin de juego
-                //game.setScreen(new EndScreen(this));
+                game.setScreen(new DeadScreen(game));
             }
 
             // Se limpia la pantalla con un color negro
@@ -177,7 +161,7 @@ public class GameScreen implements Screen {
             camera.update();
 
             // Se maneja la entrada del usuario
-            handleInput();
+            handleInput(delta);
 
             // Se dibuja el personaje usando el objeto batch del juego principal
             game.batch.begin();
@@ -185,10 +169,9 @@ public class GameScreen implements Screen {
             character.animationTime += Gdx.graphics.getDeltaTime();
             if (character.currentDisplay instanceof Animation) {
                 TextureRegion currentFrame = ((Animation<TextureRegion>) character.currentDisplay).getKeyFrame(character.animationTime, true);
-                game.batch.draw(currentFrame, character.x, character.y);
+                game.batch.draw(currentFrame, character.x, character.y, character.width, character.height);
             } else if (character.currentDisplay instanceof Sprite) {
-                ((Sprite) character.currentDisplay).setPosition(character.x, character.y);
-                ((Sprite) character.currentDisplay).draw(game.batch);
+                game.batch.draw((Sprite) character.currentDisplay, character.x, character.y, character.width, character.height);
             }
 
             spawnTimer += delta;
@@ -250,26 +233,32 @@ public class GameScreen implements Screen {
     }
 
     private void spawnGoblin() {
+        int spawnX = MathUtils.random(TileData.playerSpawn[0] * 16, TileData.playerSpawn[0] * 16 + mapWidth);
+        int spawnY = MathUtils.random(TileData.playerSpawn[1] * 16, TileData.playerSpawn[1] * 16 + mapHeight);
         // Crea un nuevo enemigo y lo añade a la lista
-        Goblins goblin = new Goblins(100, 2, new Vector2(MathUtils.random(0, Gdx.graphics.getWidth()), MathUtils.random(0, Gdx.graphics.getHeight())), character, goblins);
+        Goblins goblin = new Goblins(100, 2,new Vector2(spawnX, spawnY), character, goblins);
         //spawnGoblinSound.play();
         goblins.add(goblin);
     }
 
-    private void handleInput() {
+    private void handleInput(float delta) {
         float dx = 0, dy = 0;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            dx -= 1;
-            character.currentDisplay = character.animationLeft;
+            if(!playerCollision(character.x-8,character.y)){
+                dx -= 20;
+                character.currentDisplay = character.animationLeft;}
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            dx += 1;
-            character.currentDisplay = character.animationRight;
+            if(!playerCollision(character.x+8, character.y)){
+                dx += 20;
+                character.currentDisplay = character.animationRight;}
         } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            dy += 1;
-            character.currentDisplay = character.animationBack;
+            if(!playerCollision(character.x, character.y+8)){
+                dy += 20;
+                character.currentDisplay = character.animationBack;}
         } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            dy -= 1;
-            character.currentDisplay = character.animationFront;
+            if(!playerCollision(character.x, character.y-16)){
+                dy -= 20;
+                character.currentDisplay = character.animationFront;}
         } else {
             character.currentDisplay = character.idleSprite;
         }
@@ -292,7 +281,21 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
             game.Paused = true;
         }
-        character.move(dx, dy);
+        character.move(dx*delta, dy*delta);
+    }
+
+    boolean playerCollision(float x, float y) {
+        int tileX = (int) (x / 16);
+        int tileY = (int) (y / 16);
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+        TiledMapTileLayer.Cell cell = layer.getCell(tileX,tileY);
+        boolean collision = true;
+        try{
+            collision =  (boolean) cell.getTile().getProperties().get("collision");
+        }catch(NullPointerException e){
+            //cell no existe
+        }
+        return collision;
     }
 
     @Override

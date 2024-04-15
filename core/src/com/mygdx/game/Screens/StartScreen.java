@@ -3,6 +3,7 @@ package com.mygdx.game.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -15,7 +16,7 @@ import com.mygdx.game.Characters.Guts;
 import com.mygdx.game.Characters.Thorne;
 import com.mygdx.game.Login.LoginScreen;
 
-public class StartScreen implements Screen {
+public class StartScreen extends ScreenAdapter {
     private MyGdxGame game;
     private Guts guts = new Guts();
     private Thorne thorne = new Thorne();
@@ -23,6 +24,9 @@ public class StartScreen implements Screen {
     private Texture textureStaticGuts, textureStaticThorne;
     private Image gutsImage, thorneImage;
     private final Stage stage;
+
+    private long startTime;
+    private boolean isRunning;
 
 
     public StartScreen(MyGdxGame game) {
@@ -124,6 +128,15 @@ public class StartScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        if (isRunning) {
+            long elapsedTime = System.currentTimeMillis() - startTime;
+            // Calcula minutos y segundos
+            int minutes = (int) (elapsedTime / 1000 / 60);
+            int seconds = (int) ((elapsedTime / 1000) % 60);
+            // Actualiza la UI o realiza cualquier acción necesaria con el tiempo transcurrido
+            System.out.println("Tiempo transcurrido: " + minutes + " minutos " + seconds + " segundos");
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
             gutsImage.setPosition(920, 440);
             gutsImage.setPosition(gutsImage.getX() + 150, gutsImage.getY() + 20);
@@ -144,7 +157,11 @@ public class StartScreen implements Screen {
 
     @Override
     public void show() {
+        super.show();
 
+        // Inicia el cronómetro
+        startTime = System.currentTimeMillis();
+        isRunning = true;
     }
 
     @Override

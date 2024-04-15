@@ -1,5 +1,7 @@
 package com.mygdx.game.Login;
 
+import static com.mygdx.game.Stats.Stats.GetStats;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.mygdx.game.Screens.GameScreen;
 import com.mygdx.game.Screens.MyGdxGame;
 
 public class LoginScreen implements Screen {

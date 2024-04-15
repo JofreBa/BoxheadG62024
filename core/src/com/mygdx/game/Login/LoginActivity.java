@@ -2,6 +2,7 @@ package com.mygdx.game.Login;
 
 import com.badlogic.gdx.utils.Timer;
 import com.mygdx.game.Screens.MyGdxGame;
+import com.mygdx.game.Stats.Stats;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -9,8 +10,8 @@ import retrofit2.Response;
 
 public class LoginActivity {
     private MyGdxGame game;
-    //private String URL = "http://10.2.2.83:3000/api/login/";
-    private String URL = "http://192.168.18.213:3000/api/login/";
+    private String URL = "http://10.2.2.83:3000/api/login/";
+    //private String URL = "http://192.168.16.30:3000/api/login/";
     public LoginActivity(MyGdxGame game){
         this.game = game;
     }
@@ -34,6 +35,7 @@ public class LoginActivity {
                             if(game.Loged){
                                 System.out.println(game.Loged);
                                 game.switchToScreen("Start");
+                                Stats.GetStats();
                             }
                         }
                     }, 1);
@@ -45,7 +47,8 @@ public class LoginActivity {
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                System.out.println("Error en la conexion: " + t.getMessage());
+                System.out.println("Error en la conexión: " + t.getMessage());
+                t.printStackTrace(); // Imprimir el seguimiento completo del error
             }
         });
 

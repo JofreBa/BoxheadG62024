@@ -2,19 +2,13 @@ package com.mygdx.game.Stats;
 
 import java.util.List;
 
-public class StatsRequest {
-        private String _id;
-        private String id;
-        private int score;
-        private String time;
-
-    public String get_id() {
-        return _id;
-    }
-
-    public void set_id(String _id) {
-        this._id = _id;
-    }
+public class StatsData {
+    private String id;
+    private int score;
+    private String time;
+    private String character;
+    private List<String> skins;
+    private int games;
 
     public String getId() {
         return id;
@@ -64,20 +58,15 @@ public class StatsRequest {
         this.games = games;
     }
 
-    private String character;
-        private List<String> skins;
-        private int games;
-
-    public StatsRequest(String id, String id1, int score, String time, String character, List<String> skins, int games) {
-        _id = id;
-        this.id = id1;
+    public StatsData(String id, int score, String time, String character, List<String> skins, int games) {
+        this.id = id;
         this.score = score;
         this.time = time;
         this.character = character;
         this.skins = skins;
         this.games = games;
     }
+
+
 }
-
-
 

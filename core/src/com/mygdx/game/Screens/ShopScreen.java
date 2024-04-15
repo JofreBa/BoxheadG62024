@@ -26,7 +26,7 @@ public class ShopScreen implements Screen {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-        int Usercoins = stats.getCoins();
+        int Usercoins = 10;
 
         TextButton back = new TextButton("Back", skin);
         back.setPosition(580 ,440);
@@ -50,8 +50,8 @@ public class ShopScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if(Usercoins >= price){
-                    stats.setCoins(Usercoins - price);
-                    stats.setThorne_Sword(true);
+                    //stats.setCoins(Usercoins - price);
+                    //stats.setThorne_Sword(true);
                     System.out.println("Comprado");
                 } else {
                     System.out.println("Not enough money");
