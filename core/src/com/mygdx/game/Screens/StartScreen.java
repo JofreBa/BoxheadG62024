@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.mygdx.game.Characters.Guts;
 import com.mygdx.game.Characters.Thorne;
+import com.mygdx.game.CustomAssetManager;
 import com.mygdx.game.Login.LoginScreen;
 
 public class StartScreen extends ScreenAdapter {
@@ -28,12 +29,17 @@ public class StartScreen extends ScreenAdapter {
     private long startTime;
     private boolean isRunning;
 
+    private CustomAssetManager customAssetManager;
+
 
     public StartScreen(MyGdxGame game) {
         this.game = game;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
+        customAssetManager = new CustomAssetManager();
+        Texture texture = customAssetManager.get("Character/Goku Sprites 64x43.png", Texture.class);
+        System.out.println("TEXTURA"+texture.getWidth());
         //background = new Texture(Gdx.files.internal("fondo.jpg"));
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
@@ -134,7 +140,7 @@ public class StartScreen extends ScreenAdapter {
             int minutes = (int) (elapsedTime / 1000 / 60);
             int seconds = (int) ((elapsedTime / 1000) % 60);
             // Actualiza la UI o realiza cualquier acción necesaria con el tiempo transcurrido
-            System.out.println("Tiempo transcurrido: " + minutes + " minutos " + seconds + " segundos");
+            //System.out.println("Tiempo transcurrido: " + minutes + " minutos " + seconds + " segundos");
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {

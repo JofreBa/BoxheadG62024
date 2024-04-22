@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.Screens.GameScreen;
 import com.mygdx.game.Screens.MyGdxGame;
-
 public class LoginScreen implements Screen {
     private MyGdxGame game;
     private Stage stage;
@@ -24,43 +23,50 @@ public class LoginScreen implements Screen {
     private TextField usernameField;
     private TextField passwordField;
 
-    public LoginScreen(MyGdxGame game){
+    public LoginScreen(MyGdxGame game) {
         this.game = game;
     }
+
     @Override
     public void show() {
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         Gdx.input.setInputProcessor(stage);
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        TextButton back = new TextButton("Back", skin);
-        back.setPosition(1800 ,1000);
-        back.addListener(new ChangeListener() {
+        // Create back button
+        TextButton backButton = new TextButton("Back", skin);
+        backButton.setPosition(50, Gdx.graphics.getHeight() - 100);
+        backButton.setSize(200, 60); // Increase button size
+        backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.switchToScreen("Start");
             }
         });
+        stage.addActor(backButton);
 
+        // Create username field
         TextFieldStyle textFieldStyle = skin.get(TextFieldStyle.class);
         usernameField = new TextField("", skin);
         usernameField.setMessageText("Username");
-        usernameField.setPosition(850, 600);
-        usernameField.setSize(200, 40);
+        usernameField.setPosition(Gdx.graphics.getWidth() / 2 - 150, Gdx.graphics.getHeight() / 2 + 100);
+        usernameField.setSize(300, 60); // Increase text field size
         stage.addActor(usernameField);
 
+        // Create password field
         passwordField = new TextField("", skin);
         passwordField.setMessageText("Password");
-        passwordField.setPosition(850, 500);
-        passwordField.setSize(200, 40);
+        passwordField.setPosition(Gdx.graphics.getWidth() / 2 - 150, Gdx.graphics.getHeight() / 2);
+        passwordField.setSize(300, 60); // Increase text field size
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
         stage.addActor(passwordField);
 
-        TextButton startButton = new TextButton("Start", skin);
-        startButton.setPosition(900,400);
-
-        startButton.addListener(new ChangeListener() {
+        // Create login button
+        TextButton loginButton = new TextButton("Login", skin);
+        loginButton.setPosition(Gdx.graphics.getWidth() / 2 - 100, Gdx.graphics.getHeight() / 2 - 150);
+        loginButton.setSize(200, 60); // Increase button size
+        loginButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 String username = usernameField.getText();
@@ -69,9 +75,7 @@ public class LoginScreen implements Screen {
                 loginActivity.Login(username, password);
             }
         });
-
-        stage.addActor(startButton);
-        stage.addActor(back);
+        stage.addActor(loginButton);
     }
 
     @Override
@@ -100,7 +104,8 @@ public class LoginScreen implements Screen {
     }
 
     @Override
-    public void dispose() {stage.dispose();
-        skin.dispose();}
+    public void dispose() {
+        stage.dispose();
+        skin.dispose();
+    }
 }
-
